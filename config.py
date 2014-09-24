@@ -50,3 +50,50 @@ elif ENVIRONMENT == "production":
     MYSQLUSER         = "root"
     MYSQLPASS         = "123456"
     MYSQLDB           = "my_db"
+
+#-----------------Mysql函数-----------------#
+def get_mysql_connection():
+    try: 
+        db = MySQLdb.connect(host=MYSQLHOST, user=MYSQLUSER, passwd=MYSQLPASS, db=MYSQLDB, charset='utf8')
+    except Exception, error:
+        print "Mysql connect error!"+str(error)
+        write_log("Mysql connect error!"+str(error))
+    return db
+
+def close_mysql_connection(db):
+	db.close()
+	
+#查询
+def mysql_query(sql):
+    db  = get_mysql_connection()
+    cur = db.cursor()
+
+    cur.execute(sql)
+    index = cur.description
+    all = cur.fetchall()
+    
+    idx = 0
+    result = {}  
+    for line in all:
+        ret = {}
+        for i in range(len(index)):
+            ret[index[i][0]] = line[i]
+        if ret.has_key('id'):
+            result[ret['id']] = ret
+        else:
+            result[idx] = ret
+        idx = idx+1
+    cur.close()
+    close_mysql_connection(db)
+    
+    return result
+
+#执行
+def mysql_execute(sql):
+    db  = get_mysql_connection()
+    cur = db.cursor()
+
+    cur.execute(sql)
+    db.commit()
+    cur.close()
+    close_mysql_connection(db)
