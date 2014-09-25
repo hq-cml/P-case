@@ -142,3 +142,81 @@ def json_encode(arr):
         write_log("json encode detail exception: %s array values in stdout.log" % traceback.format_exc(), "exception")
 
     return result    
+
+#-----------------Redis 函数--------------------#	
+def get_redis(redis_db):
+    try:
+        my_redis = redis.Redis(host = REDISHOST, port = REDISPORT, db = redis_db, socket_timeout=3)
+    except Exception, error:
+        write_log("Connect Redis error! "+str(error), "exception")
+    
+    return my_redis
+
+def close_redis(my_redis):
+    del my_redis
+
+#----------------log 操作函数-----------------------# 
+def write_log(content, role=None):
+    if role:
+        log_path = LOG_PATH+"."+str(role)+".log"
+    else:
+        log_path = LOG_PATH+".log"
+    #生成一个日志对象
+    logger = logging.getLogger()
+    #生成log句柄
+    hdlr = logging.FileHandler(BASE_FILE+log_path)
+    #日志格式三项：时间，信息级别，日志信息 
+    formatter = logging.Formatter('[%(asctime)s %(levelname)s] %(message)s') 
+    #将格式器设置到处理器上
+    hdlr.setFormatter(formatter)
+    #将处理器加到日志对象上 
+    logger.addHandler(hdlr)
+    #要设置日志等级,NOTSET（值为0），输出所有信息 
+    logger.setLevel(logging.NOTSET)
+    #写入  
+    content = "["+str(os.getpid())+"] "+content
+    logger.info(content) 
+    logger.removeHandler( hdlr )
+    hdlr.close()#关闭句柄，否则会造成fd泄露
+    del logger
+
+
+#----获取异常所在的行数和执行函数名----------#
+def get_cur_func_info(): 
+    try: 
+        raise 
+    except Exception, err: 
+        f = sys.exc_info()[2].tb_frame.f_back 
+        return (f.f_code.co_name, f.f_lineno)      
+        
+if __name__ == '__main__':
+    
+    '''
+    #测试json
+    str = '{"name":"Mike","sex":"male","age":"29"}'
+    print(json_decode(str))
+    '''
+    
+    '''
+    #mysql 测试
+    result = mysql_query("select * from test1")
+    #print result
+    #print type(result)
+    for k,v in result.items():
+        print k,v
+        print v['id'], v['name']
+    '''
+    
+    '''
+    #测试日志写入
+    write_log("test test test", "test")
+    '''
+    
+    '''
+    #测试redis
+    local_redis = get_redis('minute')
+    result = local_redis.keys('*')
+    pprint.pprint(result)
+    '''
+    
+    #测试xxx
