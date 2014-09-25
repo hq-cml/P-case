@@ -97,3 +97,30 @@ def mysql_execute(sql):
     db.commit()
     cur.close()
     close_mysql_connection(db)
+
+#-----------------Http接口函数-----------------#
+def post_curl(url, argu1, argu2):
+    result = "" 
+    buf = cStringIO.StringIO()
+    c = pycurl.Curl()
+    c.setopt(c.URL, url)
+    c.setopt(c.WRITEFUNCTION, buf.write)
+    c.setopt(c.CONNECTTIMEOUT, 20)
+    c.setopt(c.TIMEOUT, 60)
+    #c.setopt(c.COOKIEFILE, '')
+    c.setopt(c.FAILONERROR, True)
+    #c.setopt(c.HTTPHEADER, ['Accept: text/html', 'Accept-Charset: UTF-8'])
+
+    try:
+        c.setopt(c.POSTFIELDS, 'argu1='+str(argu1)+'&argu2='+str(argu2))
+        c.perform()
+        result = buf.getvalue()
+        buf.close()
+    except pycurl.error, error:
+        (errno, errstr) = error
+        print 'Curl error: ', errstr
+        write_log('Curl error: ' + errstr, "exception")
+        buf.close() 
+    return result
+    
+    
