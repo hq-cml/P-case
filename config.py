@@ -123,4 +123,22 @@ def post_curl(url, argu1, argu2):
         buf.close() 
     return result
     
-    
+#---------------JSON处理------------------#
+def json_decode(str):
+    result = {}
+    try:
+        result = json.loads(str)
+    except Exception, error:
+        write_log("json decode detail exception: %s json values: %s" % (traceback.format_exc(),str), "exception")
+
+    return result
+
+def json_encode(arr):
+    result = {}
+    try:
+        result = json.dumps(arr)
+    except Exception, error:
+        print 'error array values : ', arr
+        write_log("json encode detail exception: %s array values in stdout.log" % traceback.format_exc(), "exception")
+
+    return result    
