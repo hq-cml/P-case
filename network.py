@@ -63,6 +63,7 @@ class Network(object):
                 sys.exit(1)
         
         return self.sockfd
+        
 if __name__ == '__main__':
     net = Network()
 
