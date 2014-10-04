@@ -26,3 +26,11 @@ class Network(object):
     
     def __del__(self):
         print "destruct\n"
+if __name__ == '__main__':
+    net = Network()
+
+    data = "xxxxxxxxxx"
+    #print data
+    net.send_data("127.0.0.1", 9527 ,data)
+	
+    del net
